@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "116711332300",
+    "project_id": "ramkripa-1eeb9",
+    "storage_bucket": "ramkripa-1eeb9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:116711332300:android:46970ca45454edc64aa569",
+        "android_client_info": {
+          "package_name": "com.aquawords.aquawords"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB77fNeZgpjlMgJxxPBIUACnnzrxM5lTds"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
