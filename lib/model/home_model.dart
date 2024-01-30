@@ -5,6 +5,7 @@ class HomeItemData {
   final dynamic image;
   final dynamic date;
   final dynamic isVideo;
+  final dynamic category;
 
   HomeItemData(
       {this.docid,
@@ -12,7 +13,8 @@ class HomeItemData {
         required this.name,
         required this.image,
         required this.date,
-        required this.isVideo
+        required this.isVideo,
+        required this.category
       });
 
   Map<String, dynamic> toMap() {
@@ -23,6 +25,7 @@ class HomeItemData {
       'docid': docid,
       'date': date,
       'isVideo': isVideo,
+      'category': category,
     };
   }
 
@@ -34,6 +37,7 @@ class HomeItemData {
       docid: map['docid'],
       date: map['date'],
       isVideo: map['isVideo'],
+      category: map['category'],
     );
   }
 }

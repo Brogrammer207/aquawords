@@ -1,7 +1,12 @@
+import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:lecle_yoyo_player/lecle_yoyo_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:screenshot/screenshot.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
 import 'dart:typed_data';
@@ -10,6 +15,9 @@ import 'package:flutter/rendering.dart';
 import 'package:image/image.dart' as img;
 import '../model/home_model.dart';
 import 'package:flutter/services.dart';
+
+import '../model/profile.dart';
+import 'chooseYourPurposeScreen.dart';
 
 class HomePageScreen extends StatefulWidget {
   const HomePageScreen({Key? key}) : super(key: key);
@@ -22,6 +30,21 @@ class _HomePageScreenState extends State<HomePageScreen> {
   PageController _pageController = PageController();
   int _currentIndex = 0;
   bool fullscreen = false;
+  int _selectedIndex = 0;
+  static const List<Widget> _widgetOptions = <Widget>[
+    Text('Home Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('Search Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+    Text('Profile Page',
+        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +54,28 @@ class _HomePageScreenState extends State<HomePageScreen> {
         automaticallyImplyLeading: false,
         leading: const Icon(Icons.menu),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+                icon: Icon(Icons.home),
+                label: 'Home',
+                backgroundColor: Color(0xff132137)),
+            BottomNavigationBarItem(
+                icon: Icon(Icons.search),
+                label: 'Search',
+                backgroundColor: Colors.lightBlueAccent),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person),
+              label: 'Profile',
+              backgroundColor: Colors.blue,
+            ),
+          ],
+          type: BottomNavigationBarType.shifting,
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.white,
+          iconSize: 25,
+          onTap: _onItemTapped,
+          elevation: 5),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: Stack(
         children: [
@@ -67,84 +112,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
             ],
           ),
           // Add buttons
-          Positioned(
-            top: 20,
-            left: 0,
-            right: 0,
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 1 action
-                      },
-                      child: const Text('Button 1'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 2 action
-                      },
-                      child: const Text('Button 2'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 2 action
-                      },
-                      child: const Text('Button 2'),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 3 action
-                      },
-                      child: const Text('Button 3'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 4 action
-                      },
-                      child: const Text('Button 4'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 2 action
-                      },
-                      child: const Text('Button 2'),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 5 action
-                      },
-                      child: const Text('Button 5'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 6 action
-                      },
-                      child: const Text('Button 6'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Button 2 action
-                      },
-                      child: const Text('Button 2'),
-                    ),
-                  ],
-                )
-              ],
-            ),
-          ),
         ],
       ),
     );
@@ -166,79 +133,166 @@ class SinglePage extends StatefulWidget {
 class _SinglePageState extends State<SinglePage> {
   bool fullscreen = false;
   final GlobalKey globalKey = GlobalKey();
+  ScreenshotController screenshotController = ScreenshotController();
+  int _counter = 0;
+  Uint8List? _imageFile;
+  List<Uint8List> capturedScreenshots = [];
+  Future<void> _saveScreenshot() async {
+    try {
+      final directory = await getExternalStorageDirectory();
+
+      if (directory == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('External storage not available.'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      File file = File('${directory.path}/screenshot.png');
+
+      screenshotController.capture().then((Uint8List? image) async {
+        if (image != null) {
+          await file.writeAsBytes(image.toList());
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Screenshot saved successfully.'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Failed to save screenshot.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Profile? profile;
+  void getData() {
+    FirebaseFirestore.instance
+        .collection('Profile')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((DocumentSnapshot<Map<String, dynamic>> value) {
+      if (value.exists) {
+        profile = Profile.fromMap(value.data()!);
+        setState(() {});
+      }
+    });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Align(
-          alignment: Alignment.bottomLeft,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Flexible(
-                  flex: 8,
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Container(
-                      padding: const EdgeInsets.only(bottom: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            spreadRadius: 1,
-                            blurRadius: 2,
-                            offset: const Offset(0, 1),
-                          ),
-                        ],
+    return Align(
+      alignment: Alignment.bottomLeft,
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Flexible(
+              flex: 8,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Container(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        offset: const Offset(0, 1),
                       ),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        height: 475, // Adjust the height as needed
+                        child: Screenshot(
+                            controller: screenshotController,
+                            child: Container(
+                                color: Colors.white,
+                                child: _buildContent(widget.item))),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          SizedBox(
-                            height: 375, // Adjust the height as needed
-                            child: _buildContent(widget.item),
-                          ),
-                          const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  // Button 2 action
-                                },
-                                child: const Text('share'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  // Button 2 action
-                                },
-                                child: const Text('download'),
-                              ),
-                            ],
+                          ElevatedButton(
+                            style: const ButtonStyle(
+                                backgroundColor: MaterialStatePropertyAll(
+                                    Color(0xff132137))),
+                            onPressed: () {
+                              screenshotController
+                                  .capture()
+                                  .then((value) async {
+                                print("tttttttttt${value.toString()}");
+                                if (value == null) return;
+
+                                final item = await getTemporaryDirectory();
+                                File file = File(item.path + "/screenshot.png");
+                                file.createSync();
+                                await file.writeAsBytes(value!.toList());
+                                Share.shareFiles([file.path],
+                                    text: 'Check out my captured image!');
+                              });
+                            },
+                            child: const Text(
+                              'Share',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                           ElevatedButton(
-                            onPressed: () {
-                              // Button 2 action
+                            style: const ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll(Colors.green)),
+                            onPressed: () async {
+                              await _saveScreenshot();
                             },
-                            child: const Text('Change Your Profile'),
+                            child: const Text(
+                              'download',
+                              style: TextStyle(color: Colors.white),
+                            ),
                           ),
                         ],
                       ),
-                    ),
+                      ElevatedButton(
+                        style: const ButtonStyle(
+                            backgroundColor:
+                                MaterialStatePropertyAll(Colors.blue)),
+                        onPressed: () {
+                          Get.to(const AddProfileScreen());
+                        },
+                        child: const Text(
+                          'Change Your Profile',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
-      ],
+      ),
     );
   }
 
@@ -334,7 +388,6 @@ class _SinglePageState extends State<SinglePage> {
             bottom: 70.0,
             child: Image.network(
               item.image,
-              fit: BoxFit.cover,
             ),
           ),
         Positioned(
@@ -343,21 +396,22 @@ class _SinglePageState extends State<SinglePage> {
           child: Container(
             width: 100.0,
             height: 100.0,
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Colors.blue, // Change color as needed
-            ),
-            child: Center(
-              child: Image.asset('assets/images/logo.png')
-              ),
-            ),
+            decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: Colors.blue,
+                image: DecorationImage(
+                  image: NetworkImage(profile!.image.toString() ??
+                      'https://cdn.pixabay.com/photo/2017/03/16/21/18/logo-2150297_640.png'),
+                  fit: BoxFit.cover,
+                )),
           ),
-        const Positioned(
+        ),
+        Positioned(
           bottom: 16.0,
           right: 20.0,
           child: Text(
-            'Your Text', // Add your text here
-            style: TextStyle(
+            profile!.name ?? 'Default Name',
+            style: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 25.0,
@@ -367,54 +421,6 @@ class _SinglePageState extends State<SinglePage> {
       ],
     );
   }
-
-  void _shareContent(HomeItemData item) async {
-    // Capture the current state of the widget
-    RenderRepaintBoundary boundary = globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary;
-    ui.Image image = await boundary.toImage(pixelRatio: 3.0);
-    ByteData byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    Uint8List uint8List = byteData.buffer.asUint8List();
-
-    // Create an image from the Uint8List
-    img.Image finalImage = img.decodeImage(uint8List)!;
-
-    // Add the circle image to the final image
-    img.Image circleImage = img.decodeImage((await rootBundle.load('assets/images/logo.png')).buffer.asUint8List())!;
-    img.drawImage(finalImage, circleImage);
-
-    // Add text to the final image
-    final painter = ui.Paint()
-      ..color = ui.Colors.black
-      ..strokeWidth = 5.0
-      ..strokeCap = ui.StrokeCap.butt;
-    final recorder = ui.PictureRecorder();
-    final canvas = ui.Canvas(recorder, Rect.fromPoints(ui.Offset(0.0, 0.0), ui.Offset(500.0, 500.0)));
-    final paragraphStyle = ui.ParagraphStyle(
-      textDirection: TextDirection.ltr,
-      textAlign: TextAlign.center,
-      maxLines: 1,
-      ellipsis: '...',
-      fontSize: 25.0,
-      fontWeight: FontWeight.bold,
-    );
-    final paragraphBuilder = ui.ParagraphBuilder(paragraphStyle)
-      ..pushStyle(ui.TextStyle(color: ui.Colors.black))
-      ..addText('Your Text'); // Replace with your text
-    final paragraph = paragraphBuilder.build();
-    paragraph.layout(ui.ParagraphConstraints(width: 500.0));
-    canvas.drawParagraph(paragraph, ui.Offset(150.0, 0.0));
-
-    // Convert the text canvas to an image
-    final textImage = await recorder.endRecording().toImage(500, 50);
-    final ByteData textByteData = await textImage.toByteData(format: ui.ImageByteFormat.png);
-    final Uint8List textUint8List = textByteData.buffer.asUint8List();
-    img.Image textImageDecoded = img.decodeImage(textUint8List)!;
-    img.drawImage(finalImage, textImageDecoded);
-
-    // Share the final image
-    Share.shareFiles(['final_image.png'], text: 'Check out this awesome content!');
-  }
-
 }
 
 Stream<List<HomeItemData>> getHomeItemStreamFromFirestore() {
@@ -430,6 +436,7 @@ Stream<List<HomeItemData>> getHomeItemStreamFromFirestore() {
             image: gg['image'],
             date: gg['date'],
             isVideo: gg['isVideo'],
+            category: gg['category'],
             docid: doc.id,
           ));
         }
