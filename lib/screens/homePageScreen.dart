@@ -393,14 +393,15 @@ class _SinglePageState extends State<SinglePage> {
         Positioned(
           bottom: 2.0,
           left: 16.0,
-          child: Container(
+          child:
+          Container(
             width: 100.0,
             height: 100.0,
             decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.blue,
                 image: DecorationImage(
-                  image: NetworkImage(profile!.image.toString() ??
+                  image: NetworkImage(profile?.image.toString() ??
                       'https://cdn.pixabay.com/photo/2017/03/16/21/18/logo-2150297_640.png'),
                   fit: BoxFit.cover,
                 )),
@@ -410,7 +411,7 @@ class _SinglePageState extends State<SinglePage> {
           bottom: 16.0,
           right: 20.0,
           child: Text(
-            profile!.name ?? 'Default Name',
+            profile?.name ?? 'Default Name',
             style: const TextStyle(
               color: Colors.black,
               fontWeight: FontWeight.bold,
