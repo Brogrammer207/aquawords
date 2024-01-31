@@ -30,21 +30,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
   PageController _pageController = PageController();
   int _currentIndex = 0;
   bool fullscreen = false;
-  int _selectedIndex = 0;
-  static const List<Widget> _widgetOptions = <Widget>[
-    Text('Home Page',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    Text('Search Page',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-    Text('Profile Page',
-        style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold)),
-  ];
 
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -52,30 +38,49 @@ class _HomePageScreenState extends State<HomePageScreen> {
       appBar: AppBar(
         title: const Text('AquaWords'),
         automaticallyImplyLeading: false,
-        leading: const Icon(Icons.menu),
+        leading: Builder(builder: (context) {
+          return GestureDetector(
+              onTap: () {
+                Scaffold.of(context).openDrawer();
+              },
+              child: const Icon(Icons.menu));
+        }),
       ),
-      bottomNavigationBar: BottomNavigationBar(
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-                icon: Icon(Icons.home),
-                label: 'Home',
-                backgroundColor: Color(0xff132137)),
-            BottomNavigationBarItem(
-                icon: Icon(Icons.search),
-                label: 'Search',
-                backgroundColor: Colors.lightBlueAccent),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person),
-              label: 'Profile',
-              backgroundColor: Colors.blue,
+      drawer: Drawer(
+        backgroundColor: Colors.white,
+        child: ListView(
+          padding: const EdgeInsets.all(0),
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+              ), //BoxDecoration
+              child: Image.asset(
+                'assets/images/logo.png',
+                width: 150,
+                height: 50,
+              ),
+            ), //DrawerHeader
+            ListTile(
+              leading: const Icon(Icons.person),
+              title: const Text('About Us'),
+              onTap: () {},
+            ),
+            ListTile(
+              leading: const Icon(Icons.question_mark),
+              title: const Text('Change Profile'),
+              onTap: () {
+                Get.to(const AddProfileScreen());
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.call),
+              title: const Text('Contact Us '),
+              onTap: () {},
             ),
           ],
-          type: BottomNavigationBarType.shifting,
-          currentIndex: _selectedIndex,
-          selectedItemColor: Colors.white,
-          iconSize: 25,
-          onTap: _onItemTapped,
-          elevation: 5),
+        ),
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: Stack(
         children: [
@@ -93,7 +98,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
                         child:
-                            CircularProgressIndicator()); // Show a loading indicator while data is being fetched
+                        CircularProgressIndicator()); // Show a loading indicator while data is being fetched
                   } else if (snapshot.hasError) {
                     return Text('Error: ${snapshot.error}');
                   } else {
@@ -111,13 +116,11 @@ class _HomePageScreenState extends State<HomePageScreen> {
               // Add more pages as needed
             ],
           ),
-          // Add buttons
         ],
       ),
     );
   }
 }
-
 class SinglePage extends StatefulWidget {
   SinglePage({
     Key? key,
@@ -190,7 +193,6 @@ class _SinglePageState extends State<SinglePage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     getData();
   }
@@ -262,7 +264,7 @@ class _SinglePageState extends State<SinglePage> {
                           ElevatedButton(
                             style: const ButtonStyle(
                                 backgroundColor:
-                                    MaterialStatePropertyAll(Colors.green)),
+                                MaterialStatePropertyAll(Colors.green)),
                             onPressed: () async {
                               await _saveScreenshot();
                             },
@@ -276,7 +278,7 @@ class _SinglePageState extends State<SinglePage> {
                       ElevatedButton(
                         style: const ButtonStyle(
                             backgroundColor:
-                                MaterialStatePropertyAll(Colors.blue)),
+                            MaterialStatePropertyAll(Colors.blue)),
                         onPressed: () {
                           Get.to(const AddProfileScreen());
                         },
@@ -294,6 +296,7 @@ class _SinglePageState extends State<SinglePage> {
         ),
       ),
     );
+
   }
 
   Widget _buildContent(HomeItemData item) {
@@ -393,8 +396,7 @@ class _SinglePageState extends State<SinglePage> {
         Positioned(
           bottom: 2.0,
           left: 16.0,
-          child:
-          Container(
+          child: Container(
             width: 100.0,
             height: 100.0,
             decoration: BoxDecoration(
