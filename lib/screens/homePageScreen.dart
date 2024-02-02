@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'package:aquawords/imageEditing/module/get_started/presentation/get_started_screen.dart';
+import 'package:aquawords/imageEditing/module/home/presentation/home_screen.dart';
 import 'package:aquawords/screens/purchaseScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,6 +19,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:image/image.dart' as img;
 
+import '../imageEditing/core/route/app_route_name.dart';
 import '../model/home_model.dart';
 import 'package:flutter/services.dart';
 
@@ -40,12 +43,20 @@ class _HomePageScreenState extends State<HomePageScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('AquaWords'),
-        actions: const [
+        actions: [
           Padding(
             padding: EdgeInsets.only(right: 15),
-            child: Text(
-              'Create',
-              style: TextStyle(color: Colors.black),
+            child: GestureDetector(
+              onTap: (){
+                Navigator.pushReplacementNamed(
+                  context,
+                  AppRouteName.getStarted,
+                );
+              },
+              child: Text(
+                'Create',
+                style: TextStyle(color: Colors.black),
+              ),
             ),
           )
         ],
@@ -215,6 +226,7 @@ class _SinglePageState extends State<SinglePage> {
       );
     }
   }
+  late VideoPlayerController _videoPlayerController;
 
   Profile? profile;
   void getData() {
@@ -234,8 +246,19 @@ class _SinglePageState extends State<SinglePage> {
   void initState() {
     super.initState();
     getData();
+    _videoPlayerController = VideoPlayerController.asset(
+        'assets/video/video.mp4')
+      ..initialize().then((_) {
+        setState(() {});
+        _videoPlayerController.play();
+      });
   }
+  @override
+  void dispose() {
+    super.dispose();
+    _videoPlayerController.dispose();
 
+  }
   @override
   Widget build(BuildContext context) {
     return Align(
@@ -345,88 +368,15 @@ class _SinglePageState extends State<SinglePage> {
       fit: StackFit.expand,
       children: [
         if (item.isVideo)
-          YoYoPlayer(
-            aspectRatio: 16 / 9,
-            url:
-                // 'https://dsqqu7oxq6o1v.cloudfront.net/preview-9650dW8x3YLoZ8.webm',
-                // "https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4",
-                "https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8",
-            //"https://sfux-ext.sfux.info/hls/chapter/105/1588724110/1588724110.m3u8",
-            allowCacheFile: true,
-            onCacheFileCompleted: (files) {
-              print('Cached file length ::: ${files?.length}');
+          item.image !=null ? VideoPlayer(
+        VideoPlayerController.networkUrl(
+          Uri.parse(item.image)
 
-              if (files != null && files.isNotEmpty) {
-                for (var file in files) {
-                  print('File path ::: ${file.path}');
-                }
-              }
-            },
-            onCacheFileFailed: (error) {
-              print('Cache file error ::: $error');
-            },
-            videoStyle: const VideoStyle(
-              fullscreenIcon: Icon(
-                Icons.fullscreen,
-                color: Colors.black,
-              ),
-              qualityStyle: TextStyle(
-                fontSize: 16.0,
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              ),
-              forwardAndBackwardBtSize: 30.0,
-              forwardIcon: Icon(
-                Icons.skip_next_outlined,
-                color: Colors.black,
-              ),
-              backwardIcon: Icon(
-                Icons.skip_next_outlined,
-                color: Colors.black,
-              ),
-              playButtonIconSize: 40.0,
-              playIcon: Icon(
-                Icons.play_circle,
-                size: 40.0,
-                color: Colors.black,
-              ),
-              pauseIcon: Icon(
-                Icons.remove_circle_outline_outlined,
-                size: 40.0,
-                color: Colors.black,
-              ),
-              videoQualityPadding: EdgeInsets.all(5.0),
-              showLiveDirectButton: true,
-              enableSystemOrientationsOverride: false,
-            ),
-            videoLoadingStyle: const VideoLoadingStyle(
-              loading: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Image(
-                      image: AssetImage('assets/images/progress.gif'),
-                      fit: BoxFit.fitHeight,
-                      height: 50,
-                    ),
-                    SizedBox(height: 16.0),
-                    Text("Loading video..."),
-                  ],
-                ),
-              ),
-            ),
-            videoPlayerOptions:
-                VideoPlayerOptions(allowBackgroundPlayback: true),
-            autoPlayVideoAfterInit: false,
-            onFullScreen: (value) {
-              setState(() {
-                if (fullscreen != value) {
-                  fullscreen = value;
-                }
-              });
-            },
-          )
+        )
+          ..initialize().then((_) {
+            setState(() {});
+            _videoPlayerController.play();
+          })) : const CircularProgressIndicator()
         else
           Positioned(
             bottom: 70.0,
