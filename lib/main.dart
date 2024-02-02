@@ -2,12 +2,13 @@ import 'package:aquawords/screens/loginScreen.dart';
 import 'package:aquawords/screens/splashScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 
 Future<void> main() async {
+  dotenv.load(fileName: "lib/.env");
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   runApp(const MyApp());
 }
 

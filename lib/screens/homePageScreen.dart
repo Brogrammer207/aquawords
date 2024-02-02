@@ -1,8 +1,11 @@
 import 'dart:io';
+import 'package:aquawords/screens/purchaseScreen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:lecle_yoyo_player/lecle_yoyo_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
@@ -13,6 +16,7 @@ import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
 import 'package:image/image.dart' as img;
+
 import '../model/home_model.dart';
 import 'package:flutter/services.dart';
 
@@ -31,12 +35,20 @@ class _HomePageScreenState extends State<HomePageScreen> {
   int _currentIndex = 0;
   bool fullscreen = false;
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('AquaWords'),
+        actions: const [
+          Padding(
+            padding: EdgeInsets.only(right: 15),
+            child: Text(
+              'Create',
+              style: TextStyle(color: Colors.black),
+            ),
+          )
+        ],
         automaticallyImplyLeading: false,
         leading: Builder(builder: (context) {
           return GestureDetector(
@@ -47,6 +59,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
         }),
       ),
       drawer: Drawer(
+        width: 230,
         backgroundColor: Colors.white,
         child: ListView(
           padding: const EdgeInsets.all(0),
@@ -84,43 +97,71 @@ class _HomePageScreenState extends State<HomePageScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: Stack(
         children: [
-          PageView(
-            controller: _pageController,
-            onPageChanged: (index) {
-              setState(() {
-                _currentIndex = index;
-              });
-            },
-            children: [
-              StreamBuilder<List<HomeItemData>>(
-                stream: getHomeItemStreamFromFirestore(),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                        child:
-                        CircularProgressIndicator()); // Show a loading indicator while data is being fetched
-                  } else if (snapshot.hasError) {
-                    return Text('Error: ${snapshot.error}');
-                  } else {
-                    List<HomeItemData> users = snapshot.data ?? [];
-                    return PageView.builder(
-                      itemCount: users.length,
-                      scrollDirection: Axis.vertical,
-                      itemBuilder: (context, index) {
-                        return SinglePage(item: users[index]);
-                      },
-                    );
-                  }
-                },
-              ),
-              // Add more pages as needed
-            ],
+          SizedBox(
+            height: 550,
+            child: PageView(
+              controller: _pageController,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentIndex = index;
+                });
+              },
+              children: [
+                StreamBuilder<List<HomeItemData>>(
+                  stream: getHomeItemStreamFromFirestore(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                          child:
+                              CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else {
+                      List<HomeItemData> users = snapshot.data ?? [];
+                      return PageView.builder(
+                        itemCount: users.length,
+                        scrollDirection: Axis.vertical,
+                        itemBuilder: (context, index) {
+                          return SinglePage(item: users[index]);
+                        },
+                      );
+                    }
+                  },
+                ),
+                // Add more pages as needed
+              ],
+            ),
           ),
         ],
+      ),
+      bottomNavigationBar: Card(
+        color: Colors.white,
+        elevation: 0,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Wrap(
+            children: List.generate(
+                10,
+                (index) => Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: Container(
+                          decoration: BoxDecoration(
+                              border:
+                                  Border.all(color: Colors.purple, width: 1),
+                              borderRadius: BorderRadius.circular(30)),
+                          child: Padding(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Text("datadee${index}"),
+                          )),
+                    )),
+          ),
+        ),
       ),
     );
   }
 }
+
 class SinglePage extends StatefulWidget {
   SinglePage({
     Key? key,
@@ -137,8 +178,6 @@ class _SinglePageState extends State<SinglePage> {
   bool fullscreen = false;
   final GlobalKey globalKey = GlobalKey();
   ScreenshotController screenshotController = ScreenshotController();
-  int _counter = 0;
-  Uint8List? _imageFile;
   List<Uint8List> capturedScreenshots = [];
   Future<void> _saveScreenshot() async {
     try {
@@ -206,12 +245,11 @@ class _SinglePageState extends State<SinglePage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Flexible(
-              flex: 8,
+            Expanded(
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
-                  padding: const EdgeInsets.only(bottom: 10),
+                  // padding: const EdgeInsets.only(bottom: 10),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     boxShadow: [
@@ -227,7 +265,7 @@ class _SinglePageState extends State<SinglePage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       SizedBox(
-                        height: 475, // Adjust the height as needed
+                        height: 375, // Adjust the height as needed
                         child: Screenshot(
                             controller: screenshotController,
                             child: Container(
@@ -242,19 +280,23 @@ class _SinglePageState extends State<SinglePage> {
                                 backgroundColor: MaterialStatePropertyAll(
                                     Color(0xff132137))),
                             onPressed: () {
-                              screenshotController
-                                  .capture()
-                                  .then((value) async {
-                                print("tttttttttt${value.toString()}");
-                                if (value == null) return;
+                               if(widget.item.isVideo == false){
+                                 screenshotController
+                                     .capture()
+                                     .then((value) async {
+                                   if (value == null) return;
 
-                                final item = await getTemporaryDirectory();
-                                File file = File(item.path + "/screenshot.png");
-                                file.createSync();
-                                await file.writeAsBytes(value!.toList());
-                                Share.shareFiles([file.path],
-                                    text: 'Check out my captured image!');
-                              });
+                                   final item = await getTemporaryDirectory();
+                                   File file = File(item.path + "/screenshot.png");
+                                   file.createSync();
+                                   await file.writeAsBytes(value!.toList());
+                                   Share.shareFiles([file.path],
+                                       text: 'Check out my captured image!');
+                                 });
+                               }else{
+                                 Get.to( PurchaseScreen(videolink: widget.item.image,));
+                               }
+
                             },
                             child: const Text(
                               'Share',
@@ -264,7 +306,7 @@ class _SinglePageState extends State<SinglePage> {
                           ElevatedButton(
                             style: const ButtonStyle(
                                 backgroundColor:
-                                MaterialStatePropertyAll(Colors.green)),
+                                    MaterialStatePropertyAll(Colors.green)),
                             onPressed: () async {
                               await _saveScreenshot();
                             },
@@ -278,7 +320,7 @@ class _SinglePageState extends State<SinglePage> {
                       ElevatedButton(
                         style: const ButtonStyle(
                             backgroundColor:
-                            MaterialStatePropertyAll(Colors.blue)),
+                                MaterialStatePropertyAll(Colors.blue)),
                         onPressed: () {
                           Get.to(const AddProfileScreen());
                         },
@@ -296,7 +338,6 @@ class _SinglePageState extends State<SinglePage> {
         ),
       ),
     );
-
   }
 
   Widget _buildContent(HomeItemData item) {
@@ -389,8 +430,12 @@ class _SinglePageState extends State<SinglePage> {
         else
           Positioned(
             bottom: 70.0,
+            left: 0,
+            right: 0,
+            top: 0,
             child: Image.network(
               item.image,
+              fit: BoxFit.cover,
             ),
           ),
         Positioned(
@@ -414,7 +459,7 @@ class _SinglePageState extends State<SinglePage> {
           right: 20.0,
           child: Text(
             profile?.name ?? 'Default Name',
-            style: const TextStyle(
+            style: GoogleFonts.aBeeZee(
               color: Colors.black,
               fontWeight: FontWeight.bold,
               fontSize: 25.0,
