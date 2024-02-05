@@ -3,9 +3,11 @@ import 'package:aquawords/imageEditing/module/home/presentation/widget/photo_wid
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';
 
+import '../../../../screens/homePageScreen.dart';
 import '../../../core/bloc/bloc_status.dart';
 import '../../../core/component/snackbar/info_snackbar.dart';
 import '../../../core/route/app_route_name.dart';
@@ -117,8 +119,13 @@ class _HomeLayoutState extends State<HomeLayout> {
                 SliverAppBar(
                   floating: true,
                   centerTitle: false,
+                  leading: GestureDetector(
+                    onTap: (){
+                      Get.to(const HomePageScreen());
+                    },
+                      child: const Icon(Icons.arrow_back_outlined)),
                   title: Text(
-                    "Discover",
+                    "Create Your Status",
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
                   backgroundColor: Theme.of(context).backgroundColor,
@@ -148,7 +155,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                "Search keyword, nature",
+                                "Search image for editing",
                                 style: Theme.of(context)
                                     .textTheme
                                     .bodyMedium

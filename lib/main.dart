@@ -1,4 +1,3 @@
-import 'package:aquawords/screens/loginScreen.dart';
 import 'package:aquawords/screens/splashScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';

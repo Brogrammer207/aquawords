@@ -45,15 +45,15 @@ class _HomePageScreenState extends State<HomePageScreen> {
         title: const Text('AquaWords'),
         actions: [
           Padding(
-            padding: EdgeInsets.only(right: 15),
+            padding: const EdgeInsets.only(right: 15),
             child: GestureDetector(
               onTap: (){
                 Navigator.pushReplacementNamed(
                   context,
-                  AppRouteName.getStarted,
+                  AppRouteName.home,
                 );
               },
-              child: Text(
+              child: const Text(
                 'Create',
                 style: TextStyle(color: Colors.black),
               ),
@@ -85,11 +85,7 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 height: 50,
               ),
             ), //DrawerHeader
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('About Us'),
-              onTap: () {},
-            ),
+
             ListTile(
               leading: const Icon(Icons.question_mark),
               title: const Text('Change Profile'),
@@ -97,78 +93,71 @@ class _HomePageScreenState extends State<HomePageScreen> {
                 Get.to(const AddProfileScreen());
               },
             ),
-            ListTile(
-              leading: const Icon(Icons.call),
-              title: const Text('Contact Us '),
-              onTap: () {},
-            ),
+
           ],
         ),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       body: Stack(
         children: [
-          SizedBox(
-            height: 550,
-            child: PageView(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentIndex = index;
-                });
-              },
-              children: [
-                StreamBuilder<List<HomeItemData>>(
-                  stream: getHomeItemStreamFromFirestore(),
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                          child:
-                              CircularProgressIndicator());
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else {
-                      List<HomeItemData> users = snapshot.data ?? [];
-                      return PageView.builder(
-                        itemCount: users.length,
-                        scrollDirection: Axis.vertical,
-                        itemBuilder: (context, index) {
-                          return SinglePage(item: users[index]);
-                        },
-                      );
-                    }
-                  },
-                ),
-                // Add more pages as needed
-              ],
-            ),
+          PageView(
+            controller: _pageController,
+            onPageChanged: (index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            children: [
+              StreamBuilder<List<HomeItemData>>(
+                stream: getHomeItemStreamFromFirestore(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                        child:
+                            CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Text('Error: ${snapshot.error}');
+                  } else {
+                    List<HomeItemData> users = snapshot.data ?? [];
+                    return PageView.builder(
+                      itemCount: users.length,
+                      scrollDirection: Axis.vertical,
+                      itemBuilder: (context, index) {
+                        return SinglePage(item: users[index]);
+                      },
+                    );
+                  }
+                },
+              ),
+              // Add more pages as needed
+            ],
           ),
         ],
       ),
-      bottomNavigationBar: Card(
-        color: Colors.white,
-        elevation: 0,
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Wrap(
-            children: List.generate(
-                10,
-                (index) => Padding(
-                      padding: const EdgeInsets.all(5.0),
-                      child: Container(
-                          decoration: BoxDecoration(
-                              border:
-                                  Border.all(color: Colors.purple, width: 1),
-                              borderRadius: BorderRadius.circular(30)),
-                          child: Padding(
-                            padding:
-                                const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: Text("datadee${index}"),
-                          )),
-                    )),
-          ),
-        ),
-      ),
+      // bottomNavigationBar: Card(
+      //   color: Colors.white,
+      //   elevation: 0,
+      //   child: Padding(
+      //     padding: const EdgeInsets.all(8.0),
+      //     child: Wrap(
+      //       children: List.generate(
+      //           10,
+      //           (index) => Padding(
+      //                 padding: const EdgeInsets.all(5.0),
+      //                 child: Container(
+      //                     decoration: BoxDecoration(
+      //                         border:
+      //                             Border.all(color: Colors.purple, width: 1),
+      //                         borderRadius: BorderRadius.circular(30)),
+      //                     child: Padding(
+      //                       padding:
+      //                           const EdgeInsets.symmetric(horizontal: 8.0),
+      //                       child: Text("datadee${index}"),
+      //                     )),
+      //               )),
+      //     ),
+      //   ),
+      // ),
     );
   }
 }
@@ -242,22 +231,23 @@ class _SinglePageState extends State<SinglePage> {
     });
   }
 
+
   @override
   void initState() {
     super.initState();
-    getData();
-    _videoPlayerController = VideoPlayerController.asset(
-        'assets/video/video.mp4')
-      ..initialize().then((_) {
-        setState(() {});
-        _videoPlayerController.play();
-      });
-  }
-  @override
-  void dispose() {
-    super.dispose();
-    _videoPlayerController.dispose();
 
+    if (widget.item.isVideo && widget.item.image != null) {
+      _initializeVideoController();
+    }
+  }
+
+  void _initializeVideoController() {
+    _videoPlayerController = VideoPlayerController.network(
+      widget.item.image, // Use the image directly, assuming it's a String URL
+    )..initialize().then((_) {
+      setState(() {});
+      _videoPlayerController!.play();
+    });
   }
   @override
   Widget build(BuildContext context) {
@@ -367,16 +357,10 @@ class _SinglePageState extends State<SinglePage> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        if (item.isVideo)
-          item.image !=null ? VideoPlayer(
-        VideoPlayerController.networkUrl(
-          Uri.parse(item.image)
-
-        )
-          ..initialize().then((_) {
-            setState(() {});
-            _videoPlayerController.play();
-          })) : const CircularProgressIndicator()
+        if (widget.item.isVideo)
+          _videoPlayerController != null && _videoPlayerController!.value.isInitialized
+              ? VideoPlayer(_videoPlayerController!)
+              : Center(child: CircularProgressIndicator())
         else
           Positioned(
             bottom: 70.0,

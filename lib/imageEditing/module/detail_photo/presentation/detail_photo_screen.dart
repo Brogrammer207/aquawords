@@ -219,6 +219,7 @@ class _DetailPhotoLayoutState extends State<DetailPhotoLayout> {
                               );
                             },
                             style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xff132137),
                               padding: const EdgeInsets.symmetric(vertical: 16),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(16),
