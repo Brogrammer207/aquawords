@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:lecle_yoyo_player/lecle_yoyo_player.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;

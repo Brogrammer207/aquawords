@@ -2,13 +2,13 @@ import 'dart:io';
 import 'package:aquawords/imageEditing/module/get_started/presentation/get_started_screen.dart';
 import 'package:aquawords/imageEditing/module/home/presentation/home_screen.dart';
 import 'package:aquawords/screens/purchaseScreen.dart';
+import 'package:facebook_audience_network/facebook_audience_network.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lecle_yoyo_player/lecle_yoyo_player.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -37,6 +37,14 @@ class _HomePageScreenState extends State<HomePageScreen> {
   PageController _pageController = PageController();
   int _currentIndex = 0;
   bool fullscreen = false;
+
+  @override
+  void initState() {
+    super.initState();
+    FacebookAudienceNetwork.init(
+      testingId: "37b1da9d-b48c-4103-a393-2e095e734bd6",
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -134,29 +142,32 @@ class _HomePageScreenState extends State<HomePageScreen> {
           ),
         ],
       ),
-      // bottomNavigationBar: Card(
-      //   color: Colors.white,
-      //   elevation: 0,
-      //   child: Padding(
-      //     padding: const EdgeInsets.all(8.0),
-      //     child: Wrap(
-      //       children: List.generate(
-      //           10,
-      //           (index) => Padding(
-      //                 padding: const EdgeInsets.all(5.0),
-      //                 child: Container(
-      //                     decoration: BoxDecoration(
-      //                         border:
-      //                             Border.all(color: Colors.purple, width: 1),
-      //                         borderRadius: BorderRadius.circular(30)),
-      //                     child: Padding(
-      //                       padding:
-      //                           const EdgeInsets.symmetric(horizontal: 8.0),
-      //                       child: Text("datadee${index}"),
-      //                     )),
-      //               )),
+      // bottomNavigationBar: Container(
+      //   height: 100,
+      //   color: Colors.black,
+      //   child: Container(
+      //     alignment: Alignment(0.5, 1),
+      //     child: FacebookBannerAd(
+      //       placementId: 'IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID',
+      //       bannerSize: BannerSize.STANDARD,
+      //       listener: (resutl,value){
+      //         switch(resutl){
+      //           case BannerAdResult.ERROR:
+      //             print('Error: $value');
+      //             break;
+      //           case BannerAdResult.LOADED:
+      //             print('LOADED: $value');
+      //             break;
+      //           case BannerAdResult.CLICKED:
+      //             print('CLICKED: $value');
+      //             break;
+      //           case BannerAdResult.LOGGING_IMPRESSION:
+      //             print('LOGGING_IMPRESSION: $value');
+      //             break;
+      //         }
+      //       },
       //     ),
-      //   ),
+      //   )
       // ),
     );
   }
@@ -293,7 +304,7 @@ class _SinglePageState extends State<SinglePage> {
                                 backgroundColor: MaterialStatePropertyAll(
                                     Color(0xff132137))),
                             onPressed: () {
-                               if(widget.item.isVideo == false){
+                               // if(widget.item.isVideo == false){
                                  screenshotController
                                      .capture()
                                      .then((value) async {
@@ -306,9 +317,10 @@ class _SinglePageState extends State<SinglePage> {
                                    Share.shareFiles([file.path],
                                        text: 'Check out my captured image!');
                                  });
-                               }else{
-                                 Get.to( PurchaseScreen(videolink: widget.item.image,));
-                               }
+                               // }
+                               // else{
+                               //   Get.to( PurchaseScreen(videolink: widget.item.image,));
+                               // }
 
                             },
                             child: const Text(

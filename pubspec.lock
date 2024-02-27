@@ -57,14 +57,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
-  auto_orientation:
-    dependency: transitive
-    description:
-      name: auto_orientation
-      sha256: cd56bb59b36fa54cc28ee254bc600524f022a4862f31d5ab20abd7bb1c54e678
-      url: "https://pub.dev"
-    source: hosted
-    version: "2.3.1"
   awesome_bottom_bar:
     dependency: "direct main"
     description:
@@ -193,14 +185,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.3"
-  chewie:
-    dependency: "direct main"
-    description:
-      name: chewie
-      sha256: "3427e469d7cc99536ac4fbaa069b3352c21760263e65ffb4f0e1c054af43a73e"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.7.4"
   clock:
     dependency: transitive
     description:
@@ -297,14 +281,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.3.4"
-  dbus:
-    dependency: transitive
-    description:
-      name: dbus
-      sha256: "365c771ac3b0e58845f39ec6deebc76e3276aa9922b0cc60840712094d9047ac"
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.7.10"
   dio:
     dependency: "direct main"
     description:
@@ -318,6 +294,14 @@ packages:
     description:
       name: eventify
       sha256: b829429f08586cc2001c628e7499e3e3c2493a1d895fd73b00ecb23351aa5a66
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.1"
+  facebook_audience_network:
+    dependency: "direct main"
+    description:
+      name: facebook_audience_network
+      sha256: "44eb10576b861c5872d1eec3fc9abe7494500314e4e02c49c06dbdd549c9ade0"
       url: "https://pub.dev"
     source: hosted
     version: "1.0.1"
@@ -486,14 +470,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.3.1"
-  flutter_dotenv:
-    dependency: "direct main"
-    description:
-      name: flutter_dotenv
-      sha256: "9357883bdd153ab78cbf9ffa07656e336b8bbb2b5a3ca596b0b27e119f7c7d77"
-      url: "https://pub.dev"
-    source: hosted
-    version: "5.1.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -510,14 +486,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.17"
-  flutter_screen_wake:
-    dependency: transitive
-    description:
-      name: flutter_screen_wake
-      sha256: "7c69295d1405a5e7b673f5fe938d116076a4e8620cacdf04e884242622296f65"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.0.2"
   flutter_staggered_grid_view:
     dependency: "direct main"
     description:
@@ -608,6 +576,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
+  google_mobile_ads:
+    dependency: "direct main"
+    description:
+      name: google_mobile_ads
+      sha256: d2ef5ec1e1f31137fc241bdeab3037c31062d387dd221fd884fb1160444c788b
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.0"
   graphs:
     dependency: transitive
     description:
@@ -792,14 +768,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.0"
-  lecle_yoyo_player:
-    dependency: "direct main"
-    description:
-      name: lecle_yoyo_player
-      sha256: d0ff194aa3fe85803f6d01b072fc8ebc71b2eb0ebfbaed787334fc443ed4042a
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.0.8"
   lints:
     dependency: transitive
     description:
@@ -1213,6 +1181,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.11.1"
+  startapp_sdk:
+    dependency: "direct main"
+    description:
+      name: startapp_sdk
+      sha256: "777a2d7b72f5d9b1f74f62a419c102b99ff60cd30bd5d1a5bf9c26c3598028ef"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.2"
   stream_channel:
     dependency: transitive
     description:
@@ -1373,14 +1349,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.3"
-  video_player_web_hls:
-    dependency: transitive
-    description:
-      name: video_player_web_hls
-      sha256: "278c7841a2450d1b1ad2a2eb746840045b07e5d2ad21663c84a1486925ed338b"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   vm_service:
     dependency: transitive
     description:
@@ -1389,22 +1357,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "13.0.0"
-  wakelock_plus:
-    dependency: transitive
-    description:
-      name: wakelock_plus
-      sha256: f268ca2116db22e57577fb99d52515a24bdc1d570f12ac18bb762361d43b043d
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.4"
-  wakelock_plus_platform_interface:
-    dependency: transitive
-    description:
-      name: wakelock_plus_platform_interface
-      sha256: "40fabed5da06caff0796dc638e1f07ee395fb18801fbff3255a2372db2d80385"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.1.0"
   watcher:
     dependency: transitive
     description:
@@ -1429,6 +1381,38 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.4.3"
+  webview_flutter:
+    dependency: transitive
+    description:
+      name: webview_flutter
+      sha256: "25e1b6e839e8cbfbd708abc6f85ed09d1727e24e08e08c6b8590d7c65c9a8932"
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.7.0"
+  webview_flutter_android:
+    dependency: transitive
+    description:
+      name: webview_flutter_android
+      sha256: "3e5f4e9d818086b0d01a66fb1ff9cc72ab0cc58c71980e3d3661c5685ea0efb0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.15.0"
+  webview_flutter_platform_interface:
+    dependency: transitive
+    description:
+      name: webview_flutter_platform_interface
+      sha256: d937581d6e558908d7ae3dc1989c4f87b786891ab47bb9df7de548a151779d8d
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.10.0"
+  webview_flutter_wkwebview:
+    dependency: transitive
+    description:
+      name: webview_flutter_wkwebview
+      sha256: "9bf168bccdf179ce90450b5f37e36fe263f591c9338828d6bf09b6f8d0f57f86"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.12.0"
   win32:
     dependency: transitive
     description:
