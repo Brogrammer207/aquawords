@@ -67,13 +67,13 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _loadBannerAd();
+    // _loadBannerAd();
     _createInterstitialAd();
 
   }
   void _createInterstitialAd() {
     InterstitialAd.load(
-      adUnitId: 'ca-app-pub-3940256099942544/1033173712', // Use your ad unit ID here
+      adUnitId: 'ca-app-pub-8674662143627775/7774652818', // Use your ad unit ID here
       request: AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
@@ -118,26 +118,26 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
   }
 
 
-  void _loadBannerAd() {
-    _bannerAd = BannerAd(
-      adUnitId: AdHelper.bannerAdUnitId,
-      request: AdRequest(),
-      size: AdSize.banner,
-      listener: BannerAdListener(
-        onAdLoaded: (_) {
-          setState(() {
-            _isBannerAdReady = true;
-          });
-        },
-        onAdFailedToLoad: (ad, err) {
-          _isBannerAdReady = false;
-          ad.dispose();
-        },
-      ),
-    );
-
-    _bannerAd.load();
-  }
+  // void _loadBannerAd() {
+  //   _bannerAd = BannerAd(
+  //     adUnitId: AdHelper.bannerAdUnitId,
+  //     request: AdRequest(),
+  //     size: AdSize.banner,
+  //     listener: BannerAdListener(
+  //       onAdLoaded: (_) {
+  //         setState(() {
+  //           _isBannerAdReady = true;
+  //         });
+  //       },
+  //       onAdFailedToLoad: (ad, err) {
+  //         _isBannerAdReady = false;
+  //         ad.dispose();
+  //       },
+  //     ),
+  //   );
+  //
+  //   _bannerAd.load();
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -307,7 +307,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
 class AdHelper {
   static String get bannerAdUnitId {
     if (Platform.isAndroid) {
-      return 'ca-app-pub-3940256099942544/6300978111';
+      return 'ca-app-pub-8674662143627775/6097774912';
     } else if (Platform.isIOS) {
       return 'ca-app-pub-3940256099942544/2934735716';
     } else {

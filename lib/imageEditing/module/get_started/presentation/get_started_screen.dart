@@ -26,8 +26,8 @@ class GetStartedScreen extends StatelessWidget {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      Theme.of(context).backgroundColor,
-                      Theme.of(context).backgroundColor.withOpacity(0.5),
+                      Colors.white,
+                      Colors.white.withOpacity(0.5),
                       Colors.transparent,
                     ],
                     begin: Alignment.bottomCenter,

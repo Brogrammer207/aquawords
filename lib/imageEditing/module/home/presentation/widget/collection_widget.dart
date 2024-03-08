@@ -28,7 +28,7 @@ class CollectionWidget extends SliverPersistentHeaderDelegate {
     return Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: Theme.of(context).backgroundColor,
+       color:  Colors.white.withOpacity(0.5),
         boxShadow: [
           if (shrinkOffset == 80)
             const BoxShadow(

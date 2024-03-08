@@ -62,7 +62,7 @@ class _SearchLayoutState extends State<SearchLayout> {
             color: Theme.of(context).textTheme.headlineLarge?.color,
           ),
         ),
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Colors.white.withOpacity(0.5),
         title: TextField(
           controller: keywordController,
           decoration: InputDecoration(

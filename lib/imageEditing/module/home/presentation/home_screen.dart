@@ -128,7 +128,7 @@ class _HomeLayoutState extends State<HomeLayout> {
                     "Create Your Status",
                     style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  backgroundColor: Theme.of(context).backgroundColor,
+                  backgroundColor: Colors.white.withOpacity(0.5),
                   elevation: 0,
                   bottom: PreferredSize(
                     preferredSize: const Size.fromHeight(76),
