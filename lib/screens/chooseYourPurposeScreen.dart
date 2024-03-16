@@ -64,11 +64,11 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
     }
   }
 
+
+
   @override
   void initState() {
     super.initState();
-    // _loadBannerAd();
-    _createInterstitialAd();
 
   }
   void _createInterstitialAd() {
@@ -238,6 +238,7 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                   const SizedBox(
                     height: 20,
                   ),
+
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: CommonButtonBlue(
