@@ -1,7 +1,4 @@
 import 'dart:io';
-import 'package:aquawords/imageEditing/module/get_started/presentation/get_started_screen.dart';
-import 'package:aquawords/imageEditing/module/home/presentation/home_screen.dart';
-import 'package:aquawords/screens/purchaseScreen.dart';
 import 'package:facebook_audience_network/facebook_audience_network.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -17,8 +14,6 @@ import 'package:video_player/video_player.dart';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 import 'package:flutter/rendering.dart';
-import 'package:image/image.dart' as img;
-
 import '../imageEditing/core/route/app_route_name.dart';
 import '../model/home_model.dart';
 import 'package:flutter/services.dart';
@@ -142,33 +137,6 @@ class _HomePageScreenState extends State<HomePageScreen> {
           ),
         ],
       ),
-      // bottomNavigationBar: Container(
-      //   height: 100,
-      //   color: Colors.black,
-      //   child: Container(
-      //     alignment: Alignment(0.5, 1),
-      //     child: FacebookBannerAd(
-      //       placementId: 'IMG_16_9_APP_INSTALL#YOUR_PLACEMENT_ID',
-      //       bannerSize: BannerSize.STANDARD,
-      //       listener: (resutl,value){
-      //         switch(resutl){
-      //           case BannerAdResult.ERROR:
-      //             print('Error: $value');
-      //             break;
-      //           case BannerAdResult.LOADED:
-      //             print('LOADED: $value');
-      //             break;
-      //           case BannerAdResult.CLICKED:
-      //             print('CLICKED: $value');
-      //             break;
-      //           case BannerAdResult.LOGGING_IMPRESSION:
-      //             print('LOGGING_IMPRESSION: $value');
-      //             break;
-      //         }
-      //       },
-      //     ),
-      //   )
-      // ),
     );
   }
 }
@@ -246,7 +214,7 @@ class _SinglePageState extends State<SinglePage> {
   @override
   void initState() {
     super.initState();
-
+    getData();
     if (widget.item.isVideo && widget.item.image != null) {
       _initializeVideoController();
     }
@@ -317,10 +285,6 @@ class _SinglePageState extends State<SinglePage> {
                                    Share.shareFiles([file.path],
                                        text: 'Check out my captured image!');
                                  });
-                               // }
-                               // else{
-                               //   Get.to( PurchaseScreen(videolink: widget.item.image,));
-                               // }
 
                             },
                             child: const Text(

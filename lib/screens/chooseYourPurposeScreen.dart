@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:io';
 import 'package:aquawords/screens/homePageScreen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:facebook_audience_network/facebook_audience_network.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
@@ -10,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:form_field_validator/form_field_validator.dart';
 import 'package:get/get.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:image_picker/image_picker.dart';
+import '../model/profile.dart';
 import '../widget/helper.dart';
 import '../widgets/customtextformfield.dart';
 
@@ -29,12 +28,27 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
   Rx<File> image = File("").obs;
   Rx<File> categoryFile = File("").obs;
   String? categoryValue;
-  late BannerAd _bannerAd;
-  bool _isBannerAdReady = false;
-  InterstitialAd? _interstitialAd;
-  int _numInterstitialLoadAttempts = 0;
-  int maxFailedLoadAttempts = 3;
-  AdRequest request = AdRequest();
+
+  Profile? profile;
+  void getData() {
+    FirebaseFirestore.instance
+        .collection('Profile')
+        .doc(FirebaseAuth.instance.currentUser!.uid)
+        .get()
+        .then((DocumentSnapshot<Map<String, dynamic>> value) {
+      if (value.exists) {
+        profile = Profile.fromMap(value.data()!);
+        String imageUrl = profile!.image; // Assuming 'image' is the field storing the image URL
+        // Check if the image URL is not empty
+        if (imageUrl.isNotEmpty) {
+          categoryFile.value = File(imageUrl);
+          setState(() {});
+        }
+        nameController.text = profile!.name;
+      }
+    });
+  }
+
 
   Future<void> uploadImage() async {
     try {
@@ -49,8 +63,6 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
 
       TaskSnapshot taskSnapshot = await uploadTask.whenComplete(() {});
       String downloadUrl = await taskSnapshot.ref.getDownloadURL();
-
-      // Save the download URL in Firestore
       await FirebaseFirestore.instance.collection('Profile').doc(userId).set({
         'image': downloadUrl,
         'name': nameController.text.trim(),
@@ -59,101 +71,21 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
       Get.to(const HomePageScreen());
       Helper.hideLoader(loader);
     } catch (e) {
-      // Handle the error
       print('Error uploading image: $e');
     }
   }
 
-
-
   @override
   void initState() {
     super.initState();
-
+    getData();
   }
-  void _createInterstitialAd() {
-    InterstitialAd.load(
-      adUnitId: 'ca-app-pub-8674662143627775/7774652818', // Use your ad unit ID here
-      request: AdRequest(),
-      adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (InterstitialAd ad) {
-          log('$ad loaded');
-          _interstitialAd = ad;
-          _numInterstitialLoadAttempts = 0;
-          _interstitialAd!.setImmersiveMode(true);
-        },
-        onAdFailedToLoad: (LoadAdError error) {
-          log('InterstitialAd failed to load: $error.');
-          _numInterstitialLoadAttempts += 1;
-          _interstitialAd = null;
-          if (_numInterstitialLoadAttempts < maxFailedLoadAttempts) {
-            _createInterstitialAd();
-          }
-        },
-      ),
-    );
-  }
-
-  void _showInterstitialAd() {
-    if (_interstitialAd == null) {
-      log('Warning: attempt to show interstitial before loaded.');
-      return;
-    }
-    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdShowedFullScreenContent: (InterstitialAd ad) =>
-          log('ad onAdShowedFullScreenContent.'),
-      onAdDismissedFullScreenContent: (InterstitialAd ad) {
-        log('$ad onAdDismissedFullScreenContent.');
-        ad.dispose();
-        _createInterstitialAd();
-      },
-      onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-        log('$ad onAdFailedToShowFullScreenContent: $error');
-        ad.dispose();
-        _createInterstitialAd();
-      },
-    );
-    _interstitialAd!.show();
-    _interstitialAd = null; // Setting to null to indicate that the ad has been shown
-  }
-
-
-  // void _loadBannerAd() {
-  //   _bannerAd = BannerAd(
-  //     adUnitId: AdHelper.bannerAdUnitId,
-  //     request: AdRequest(),
-  //     size: AdSize.banner,
-  //     listener: BannerAdListener(
-  //       onAdLoaded: (_) {
-  //         setState(() {
-  //           _isBannerAdReady = true;
-  //         });
-  //       },
-  //       onAdFailedToLoad: (ad, err) {
-  //         _isBannerAdReady = false;
-  //         ad.dispose();
-  //       },
-  //     ),
-  //   );
-  //
-  //   _bannerAd.load();
-  // }
 
   @override
   Widget build(BuildContext context) {
-    _showInterstitialAd();
+    getData();
 
     return Scaffold(
-      bottomNavigationBar: _isBannerAdReady
-          ? Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: _bannerAd.size.width.toDouble(),
-                height: 70,
-                child: AdWidget(ad: _bannerAd),
-              ),
-            )
-          : SizedBox(),
       body: Column(
         children: [
           Expanded(
@@ -164,53 +96,55 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   GestureDetector(
-                      onTap: () {
-                        showActionSheet(context);
-                      },
-                      child: categoryFile.value.path != ""
-                          ? Obx(() {
-                              return Container(
-                                  padding: const EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                      color: Colors.white,
-                                      borderRadius: BorderRadius.circular(11),
-                                      boxShadow: const [
-                                        BoxShadow(
-                                          color: Colors.black12,
-                                          offset: Offset(
-                                            0.2,
-                                            0.2,
-                                          ),
-                                          blurRadius: 1,
-                                        ),
-                                      ]),
-                                  height: 150,
-                                  width: 150,
-                                  child: Image.file(
-                                    categoryFile.value,
-                                  ));
-                            })
-                          : Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white,
-                                  borderRadius: BorderRadius.circular(11),
-                                  boxShadow: const [
-                                    BoxShadow(
-                                      color: Colors.black12,
-                                      offset: Offset(
-                                        0.2,
-                                        0.2,
-                                      ),
-                                      blurRadius: 1,
-                                    ),
-                                  ]),
-                              height: 150,
-                              width: 150,
-                              child: const Icon(
-                                Icons.person,
-                                size: 100,
-                              ))),
-                  const SizedBox(
+                  onTap: () {
+            showActionSheet(context);
+            },
+              child: categoryFile.value.path.isNotEmpty
+                  ? Container(
+                padding: const EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(11),
+                    boxShadow: const [
+                      BoxShadow(
+                        color: Colors.black12,
+                        offset: Offset(
+                          0.2,
+                          0.2,
+                        ),
+                        blurRadius: 1,
+                      ),
+                    ]),
+                height: 150,
+                width: 150,
+                child: Image.network(
+                  profile!.image, // Use the image URL directly
+                  fit: BoxFit.cover,
+                ),
+              )
+                  : Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(11),
+                      boxShadow: const [
+                        BoxShadow(
+                          color: Colors.black12,
+                          offset: Offset(
+                            0.2,
+                            0.2,
+                          ),
+                          blurRadius: 1,
+                        ),
+                      ]),
+                  height: 150,
+                  width: 150,
+                  child: const Icon(
+                    Icons.person,
+                    size: 100,
+                  )),
+            ),
+
+            const SizedBox(
                     height: 20,
                   ),
                   const Text(
@@ -238,7 +172,6 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
                   const SizedBox(
                     height: 20,
                   ),
-
                   Padding(
                     padding: const EdgeInsets.only(left: 20, right: 20),
                     child: CommonButtonBlue(
@@ -302,17 +235,5 @@ class _AddProfileScreenState extends State<AddProfileScreen> {
         ],
       ),
     );
-  }
-}
-
-class AdHelper {
-  static String get bannerAdUnitId {
-    if (Platform.isAndroid) {
-      return 'ca-app-pub-8674662143627775/6097774912';
-    } else if (Platform.isIOS) {
-      return 'ca-app-pub-3940256099942544/2934735716';
-    } else {
-      throw new UnsupportedError('Unsupported platform');
-    }
   }
 }
